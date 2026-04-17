@@ -1,0 +1,24 @@
+{
+  "overview": "A fresh fish e-commerce store where customers browse and buy fresh clean-cut fish, dry fish, chutneys, fish masala, and other spice blends. Features a product catalog with categories, shopping cart, Stripe checkout, and an admin panel to manage products.",
+  "features": [
+    "Product catalog with categories (fresh fish, dry fish, chutneys, masalas)",
+    "Product detail pages with size/weight options and pricing",
+    "Shopping cart with quantity management",
+    "Stripe checkout with order confirmation",
+    "Search and category filtering",
+    "Admin panel with product management and image upload",
+    "Inventory / stock status tracking",
+    "About page and FAQ"
+  ],
+  "category": "e-commerce",
+  "tags": [
+    "fish",
+    "seafood",
+    "e-commerce",
+    "food",
+    "marketplace",
+    "masala",
+    "chutney"
+  ],
+  "last_updated": "2026-04-17T12:25:07.868Z"
+}

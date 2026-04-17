@@ -1,0 +1,186 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type WeightOption = 
+ record {
+   price: nat;
+   weight: text;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type ReviewInput = 
+ record {
+   comment: text;
+   productId: ProductId;
+   rating: nat;
+   reviewerName: text;
+ };
+type ReviewId = nat;
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   id: ReviewId;
+   productId: ProductId;
+   rating: nat;
+   reviewerName: text;
+ };
+type ProductInput = 
+ record {
+   basePrice: nat;
+   category: Category;
+   description: text;
+   featured: bool;
+   name: text;
+   stockQuantity: nat;
+   weightOptions: vec WeightOption;
+ };
+type ProductId = nat;
+type Product = 
+ record {
+   basePrice: nat;
+   category: Category;
+   createdAt: Timestamp;
+   description: text;
+   featured: bool;
+   id: ProductId;
+   images: vec ExternalBlob;
+   name: text;
+   stockQuantity: nat;
+   weightOptions: vec WeightOption;
+ };
+type OrderStatus = 
+ variant {
+   cancelled;
+   paid;
+   pending;
+ };
+type OrderItem = 
+ record {
+   productId: ProductId;
+   productName: text;
+   quantity: nat;
+   unitPrice: nat;
+   weight: opt text;
+ };
+type OrderId = nat;
+type Order = 
+ record {
+   createdAt: Timestamp;
+   customer: CustomerDetails;
+   id: OrderId;
+   items: vec OrderItem;
+   status: OrderStatus;
+   stripePaymentIntentId: opt text;
+   totalAmount: nat;
+ };
+type ExternalBlob = blob;
+type CustomerDetails = 
+ record {
+   address: text;
+   email: text;
+   name: text;
+   phone: text;
+ };
+type CreateOrderInput = 
+ record {
+   customer: CustomerDetails;
+   items: vec OrderItem;
+   totalAmount: nat;
+ };
+type Category = 
+ variant {
+   chutney;
+   dry_fish;
+   fresh_fish;
+   masala;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  addProduct: (key: text, input: ProductInput) -> (Product);
+  addProductImage: (key: text, id: ProductId, image: ExternalBlob) -> (bool);
+  addReview: (input: ReviewInput) -> (Review);
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  createOrder: (input: CreateOrderInput) -> (Order);
+  deleteProduct: (key: text, id: ProductId) -> (bool);
+  getOrder: (id: OrderId) -> (opt Order) query;
+  getProduct: (id: ProductId) -> (opt Product) query;
+  getProductReviews: (productId: ProductId) -> (vec Review) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  isStripeConfigured: () -> (bool) query;
+  listFeaturedProducts: () -> (vec Product) query;
+  listOrders: (key: text) -> (vec Order);
+  listProducts: () -> (vec Product) query;
+  listProductsByCategory: (category: Category) -> (vec Product) query;
+  setAdminKey: (currentKey: text, newKey: text) -> (bool);
+  setOrderPaymentIntent: (key: text, id: OrderId, intentId: text) ->
+   (opt Order);
+  setStripeConfiguration: (key: text, config: StripeConfiguration) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateOrderStatus: (key: text, id: OrderId, status: OrderStatus) ->
+   (opt Order);
+  updateProduct: (key: text, id: ProductId, input: ProductInput) ->
+   (opt Product);
+  updateStock: (key: text, id: ProductId, quantity: nat) -> (bool);
+}

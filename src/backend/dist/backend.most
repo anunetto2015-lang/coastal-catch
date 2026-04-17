@@ -1,0 +1,86 @@
+// Version: 1.0.0
+type Category__951250105 = {#chutney; #dry_fish; #fresh_fish; #masala};
+type CustomerDetails__516107475 =
+  {address : Text; email : Text; name : Text; phone : Text};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__246066408 = Blob;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OrderId__197865225 = Nat;
+type OrderItem__970180480 =
+  {
+    productId : ProductId__160010635;
+    productName : Text;
+    quantity : Nat;
+    unitPrice : Nat;
+    weight : ?Text
+  };
+type OrderStatus__591380551 = {#cancelled; #paid; #pending};
+type Order__720360493 =
+  {
+    createdAt : Timestamp__301639476;
+    customer : CustomerDetails__516107475;
+    id : OrderId__197865225;
+    items : [OrderItem__970180480];
+    status : OrderStatus__591380551;
+    stripePaymentIntentId : ?Text;
+    totalAmount : Nat
+  };
+type ProductId__160010635 = Nat;
+type Product__247116600 =
+  {
+    basePrice : Nat;
+    category : Category__951250105;
+    createdAt : Timestamp__301639476;
+    description : Text;
+    featured : Bool;
+    id : ProductId__160010635;
+    images : [ExternalBlob__246066408];
+    name : Text;
+    stockQuantity : Nat;
+    weightOptions : [WeightOption__236726426]
+  };
+type ReviewId__496285678 = Nat;
+type Review__1059295586 =
+  {
+    comment : Text;
+    createdAt : Timestamp__301639476;
+    id : ReviewId__496285678;
+    productId : ProductId__160010635;
+    rating : Nat;
+    reviewerName : Text
+  };
+type StripeConfiguration__96897619 =
+  {allowedCountries : [Text]; secretKey : Text};
+type Timestamp__301639476 = Int;
+type WeightOption__236726426 = {price : Nat; weight : Text};
+actor {
+  stable var adminKey : Text;
+  stable orderState :
+    {
+      var nextOrderId : OrderId__197865225;
+      orders : Map__605269027<OrderId__197865225, Order__720360493>
+    };
+  stable productState :
+    {
+      var initialized : Bool;
+      var nextProductId : ProductId__160010635;
+      products : Map__605269027<ProductId__160010635, Product__247116600>
+    };
+  stable reviewState :
+    {
+      var nextReviewId : ReviewId__496285678;
+      reviews : Map__605269027<ReviewId__496285678, Review__1059295586>
+    };
+  stable var stripeConfig : ?StripeConfiguration__96897619
+};
